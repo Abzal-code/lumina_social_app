@@ -3,10 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumina/app/app.dart';
 import 'package:lumina/features/home/presentation/home_page.dart';
+import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
+import 'package:lumina/features/posts/domain/entities/post.dart';
+import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
 import 'package:lumina/features/posts/presentation/posts_page.dart';
 
+class _FakePostsRepository implements PostsRepository {
+  @override
+  Future<List<Post>> getPosts() async => const [
+    Post(id: 1, authorId: 1, title: 'Hello Lumina', body: 'Welcome post'),
+  ];
+}
+
 Future<void> pumpApp(WidgetTester tester) async {
-  await tester.pumpWidget(const ProviderScope(child: LuminaApp()));
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        postsRepositoryProvider.overrideWithValue(_FakePostsRepository()),
+      ],
+      child: const LuminaApp(),
+    ),
+  );
   await tester.pumpAndSettle();
 }
 
@@ -33,7 +50,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PostsPage), findsOneWidget);
-    expect(find.text('Stories are on their way'), findsOneWidget);
+    expect(find.text('Hello Lumina'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
     final navigationBar = tester.widget<NavigationBar>(
       find.byType(NavigationBar),
