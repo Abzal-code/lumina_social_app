@@ -4,7 +4,9 @@ A Flutter client for the [JSONPlaceholder](https://jsonplaceholder.typicode.com)
 
 ## Current status
 
-The application foundation, design system, and navigation shell are implemented: centralized design tokens, reusable layout widgets, and four-tab bottom navigation (Home, Posts, Users, Favorites). API-backed features are in development.
+The application foundation, design system, and navigation shell are implemented: centralized design tokens, reusable layout widgets, and four-tab bottom navigation (Home, Posts, Users, Favorites).
+
+The posts domain and data layers are also in place: a Dio-based API client, DTO-to-entity mapping (`PostDto` → `Post`), and typed exception-to-failure mapping so repositories surface `AppFailure` values instead of raw transport errors. UI integration for posts is next.
 
 ## Planned features
 
