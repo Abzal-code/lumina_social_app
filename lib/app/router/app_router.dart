@@ -2,18 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/home/presentation/home_page.dart';
+import '../../features/posts/presentation/posts_page.dart';
+import '../../features/users/presentation/users_page.dart';
+import '../shell/app_shell.dart';
+import 'app_routes.dart';
 
-/// Exposes the application router so widgets and (later) other providers
-/// can depend on it through Riverpod.
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    routes: [GoRoute(path: '/', builder: (context, state) => const HomePage())],
+    initialLocation: AppRoutes.home,
+    routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.posts,
+                builder: (context, state) => const PostsPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.users,
+                builder: (context, state) => const UsersPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.favorites,
+                builder: (context, state) => const FavoritesPage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
     errorBuilder: (context, state) => const _NavigationErrorPage(),
   );
 });
 
-/// Shown when navigation fails (e.g. an unknown route).
 class _NavigationErrorPage extends StatelessWidget {
   const _NavigationErrorPage();
 
@@ -35,7 +77,7 @@ class _NavigationErrorPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               FilledButton(
-                onPressed: () => context.go('/'),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Go home'),
               ),
             ],

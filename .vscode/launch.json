@@ -1,30 +1,25 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Flutter",
+      "name": "Lumina — Debug",
       "type": "dart",
       "request": "launch",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "flutterMode": "debug"
     },
     {
-      "name": "lumina",
-      "request": "launch",
-      "type": "dart"
-    },
-    {
-      "name": "lumina (profile mode)",
-      "request": "launch",
+      "name": "Lumina — Profile",
       "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
       "flutterMode": "profile"
     },
     {
-      "name": "lumina (release mode)",
-      "request": "launch",
+      "name": "Lumina — Release",
       "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
       "flutterMode": "release"
     }
   ]

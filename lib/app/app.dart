@@ -5,7 +5,6 @@ import '../core/constants/app_constants.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
-/// Root widget of the application.
 class LuminaApp extends ConsumerWidget {
   const LuminaApp({super.key});
 

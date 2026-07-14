@@ -2,9 +2,9 @@
 
 A Flutter client for the [JSONPlaceholder](https://jsonplaceholder.typicode.com) API: browse posts, comments, and users, search and filter content, and keep local favorites.
 
-## Status
+## Current status
 
-✅ **Project foundation complete** — identifiers, dependencies, linting, theming, routing, and a placeholder home screen are in place. Feature implementation is next.
+The application foundation, design system, and navigation shell are implemented: centralized design tokens, reusable layout widgets, and four-tab bottom navigation (Home, Posts, Users, Favorites). API-backed features are in development.
 
 ## Planned features
 
@@ -19,6 +19,8 @@ A Flutter client for the [JSONPlaceholder](https://jsonplaceholder.typicode.com)
 
 - **Flutter** 3.44.0 (stable) / **Dart** 3.12.0
 - Riverpod (state management & DI), Dio (networking), go_router (navigation)
+- go_router `StatefulShellRoute.indexedStack` for state-preserving bottom-tab navigation
+- Centralized design tokens (colors, spacing, radius, typography) feeding a single Material 3 theme
 - Freezed + json_serializable (immutable models & DTO parsing)
 
 ## Getting started
