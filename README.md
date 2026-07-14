@@ -1,17 +1,30 @@
-# lumina
+# Lumina
 
-A new Flutter project.
+A Flutter client for the [JSONPlaceholder](https://jsonplaceholder.typicode.com) API: browse posts, comments, and users, search and filter content, and keep local favorites.
 
-## Getting Started
+## Status
 
-This project is a starting point for a Flutter application.
+✅ **Project foundation complete** — identifiers, dependencies, linting, theming, routing, and a placeholder home screen are in place. Feature implementation is next.
 
-A few resources to get you started if this is your first Flutter project:
+## Planned features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Posts list with search/filtering and pull-to-refresh
+- Post details with comments
+- Users list and user profile with their posts
+- At least one create/edit/delete operation
+- Local favorites (persisted with SharedPreferences)
+- Loading, empty, and error states with retry
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Tech stack
+
+- **Flutter** 3.44.0 (stable) / **Dart** 3.12.0
+- Riverpod (state management & DI), Dio (networking), go_router (navigation)
+- Freezed + json_serializable (immutable models & DTO parsing)
+
+## Getting started
+
+```sh
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter run
+```

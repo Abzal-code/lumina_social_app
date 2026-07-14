@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lumina"
+    namespace = "com.abzal.lumina"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,8 +15,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.lumina"
+        applicationId = "com.abzal.lumina"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
