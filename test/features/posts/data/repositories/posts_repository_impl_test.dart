@@ -77,4 +77,29 @@ void main() {
       );
     });
   });
+
+  group('PostsRepositoryImpl.getPost', () {
+    test('maps the DTO to a domain entity with userId as authorId', () async {
+      when(() => dataSource.getPost(10)).thenAnswer(
+        (_) async =>
+            const PostDto(userId: 4, id: 10, title: 'one', body: 'body'),
+      );
+
+      final post = await repository.getPost(10);
+
+      expect(post, const Post(id: 10, authorId: 4, title: 'one', body: 'body'));
+    });
+
+    test('maps NotFoundException to NotFoundFailure', () {
+      when(() => dataSource.getPost(999)).thenThrow(const NotFoundException());
+
+      expect(repository.getPost(999), throwsA(isA<NotFoundFailure>()));
+    });
+
+    test('surfaces the typed failure for invalid IDs without network', () {
+      when(() => dataSource.getPost(0)).thenThrow(const NotFoundException());
+
+      expect(repository.getPost(0), throwsA(isA<NotFoundFailure>()));
+    });
+  });
 }

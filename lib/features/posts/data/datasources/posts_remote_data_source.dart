@@ -7,6 +7,8 @@ import '../dto/post_dto.dart';
 /// Implementations throw [AppException] subtypes on error.
 abstract interface class PostsRemoteDataSource {
   Future<List<PostDto>> getPosts();
+
+  Future<PostDto> getPost(int postId);
 }
 
 class PostsRemoteDataSourceImpl implements PostsRemoteDataSource {
@@ -23,6 +25,15 @@ class PostsRemoteDataSourceImpl implements PostsRemoteDataSource {
       );
     }
     return data.map(_parsePost).toList(growable: false);
+  }
+
+  @override
+  Future<PostDto> getPost(int postId) async {
+    if (postId <= 0) {
+      throw NotFoundException('Invalid post id: $postId');
+    }
+    final data = await _client.get('/posts/$postId');
+    return _parsePost(data);
   }
 
   PostDto _parsePost(Object? element) {

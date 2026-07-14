@@ -3,24 +3,25 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/widgets/skeleton_bar.dart';
 
-class PostsLoadingView extends StatelessWidget {
-  const PostsLoadingView({super.key});
+class CommentsLoadingView extends StatelessWidget {
+  const CommentsLoadingView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-      itemCount: 6,
-      separatorBuilder: (context, index) =>
-          const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) => const _SkeletonCard(),
+    return const Column(
+      children: [
+        _SkeletonCommentCard(),
+        SizedBox(height: AppSpacing.sm),
+        _SkeletonCommentCard(),
+        SizedBox(height: AppSpacing.sm),
+        _SkeletonCommentCard(),
+      ],
     );
   }
 }
 
-class _SkeletonCard extends StatelessWidget {
-  const _SkeletonCard();
+class _SkeletonCommentCard extends StatelessWidget {
+  const _SkeletonCommentCard();
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +31,14 @@ class _SkeletonCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: .start,
           children: [
-            SkeletonBar(width: 120, height: 12),
-            SizedBox(height: AppSpacing.md),
-            SkeletonBar(height: 16),
+            SkeletonBar(width: 140, height: 12),
             SizedBox(height: AppSpacing.sm),
+            SkeletonBar(width: 200, height: 10),
+            SizedBox(height: AppSpacing.md),
             SkeletonBar(height: 12),
             SizedBox(height: AppSpacing.xs),
             FractionallySizedBox(
-              widthFactor: 0.6,
+              widthFactor: 0.7,
               child: SkeletonBar(height: 12),
             ),
           ],

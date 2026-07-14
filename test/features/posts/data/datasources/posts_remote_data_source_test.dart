@@ -115,4 +115,51 @@ void main() {
       );
     });
   });
+
+  group('PostsRemoteDataSourceImpl.getPost', () {
+    test('parses a JSON object into a PostDto', () async {
+      final dataSource = _dataSourceWith((options) async {
+        expect(options.path, '/posts/10');
+        return _jsonResponse({
+          'userId': 1,
+          'id': 10,
+          'title': 'single',
+          'body': 'one post',
+        });
+      });
+
+      final post = await dataSource.getPost(10);
+
+      expect(
+        post,
+        const PostDto(userId: 1, id: 10, title: 'single', body: 'one post'),
+      );
+    });
+
+    test('throws ParsingException when the body is not an object', () {
+      final dataSource = _dataSourceWith((_) async => _jsonResponse([1, 2]));
+
+      expect(dataSource.getPost(10), throwsA(isA<ParsingException>()));
+    });
+
+    test('maps HTTP 404 to NotFoundException', () {
+      final dataSource = _dataSourceWith(
+        (_) async => _jsonResponse({}, statusCode: 404),
+      );
+
+      expect(dataSource.getPost(999), throwsA(isA<NotFoundException>()));
+    });
+
+    test('rejects non-positive IDs without performing a request', () {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      expect(dataSource.getPost(0), throwsA(isA<NotFoundException>()));
+      expect(dataSource.getPost(-3), throwsA(isA<NotFoundException>()));
+      expect(requested, isFalse);
+    });
+  });
 }

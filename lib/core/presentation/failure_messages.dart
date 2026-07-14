@@ -1,4 +1,4 @@
-import '../../../core/error/app_failure.dart';
+import '../error/app_failure.dart';
 
 extension AppFailureUserMessage on AppFailure {
   String get userMessage => switch (this) {

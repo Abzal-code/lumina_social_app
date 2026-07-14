@@ -10,9 +10,10 @@ The posts domain and data layers are in place: a Dio-based API client, DTO-to-en
 
 The Posts tab shows the live publications list with local case-insensitive title/body search, pull-to-refresh, and distinct loading, empty, and error states with retry.
 
+Each post opens a deep-link-compatible details route (`/posts/:id`) with the full text and its comments, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
+
 ## Upcoming
 
-- Post details with comments
 - Users list and user profile with their posts
 - At least one create/edit/delete operation
 - Local favorites (persisted with SharedPreferences)

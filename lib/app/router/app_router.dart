@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/home/presentation/home_page.dart';
+import '../../features/posts/presentation/post_details_page.dart';
 import '../../features/posts/presentation/posts_page.dart';
 import '../../features/users/presentation/users_page.dart';
 import '../shell/app_shell.dart';
@@ -30,6 +31,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.posts,
                 builder: (context, state) => const PostsPage(),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.postDetailsSegment,
+                    builder: (context, state) {
+                      final postId = int.tryParse(
+                        state.pathParameters['postId'] ?? '',
+                      );
+                      if (postId == null || postId <= 0) {
+                        return const PostUnavailablePage();
+                      }
+                      return PostDetailsPage(postId: postId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

@@ -9,10 +9,18 @@ import 'package:lumina/features/posts/domain/repositories/posts_repository.dart'
 import 'package:lumina/features/posts/presentation/posts_page.dart';
 
 class _FakePostsRepository implements PostsRepository {
+  static const _post = Post(
+    id: 1,
+    authorId: 1,
+    title: 'Hello Lumina',
+    body: 'Welcome post',
+  );
+
   @override
-  Future<List<Post>> getPosts() async => const [
-    Post(id: 1, authorId: 1, title: 'Hello Lumina', body: 'Welcome post'),
-  ];
+  Future<List<Post>> getPosts() async => const [_post];
+
+  @override
+  Future<Post> getPost(int postId) async => _post;
 }
 
 Future<void> pumpApp(WidgetTester tester) async {
