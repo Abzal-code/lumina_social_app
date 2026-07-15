@@ -33,15 +33,13 @@ class PostDetailsController extends _$PostDetailsController {
 
   Future<void> retryComments() => _loadComments();
 
-  /// Keeps current comments visible while fetching; a failure is exposed on
-  /// [PostDetailsState.commentsFailure] instead of being rethrown, so
-  /// pull-to-refresh always completes.
+  /// Refreshes comments without discarding the currently displayed list.
   Future<void> refreshComments() async {
     if (postId <= 0 || _commentsRequestInFlight) {
       return;
     }
     _commentsRequestInFlight = true;
-    state = state.copyWith(areCommentsRefreshing: true);
+    state = state.copyWith(areCommentsRefreshing: true, commentsFailure: null);
     try {
       final comments = await ref
           .read(commentsRepositoryProvider)

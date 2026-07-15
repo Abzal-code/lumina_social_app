@@ -155,9 +155,12 @@ class _PostDetailsContent extends StatelessWidget {
       return const [CommentsEmptyView()];
     }
     return [
-      for (final comment in state.comments) ...[
-        CommentCard(key: ValueKey(comment.id), comment: comment),
-        if (comment != state.comments.last)
+      for (var index = 0; index < state.comments.length; index++) ...[
+        CommentCard(
+          key: ValueKey(state.comments[index].id),
+          comment: state.comments[index],
+        ),
+        if (index < state.comments.length - 1)
           const SizedBox(height: AppSpacing.sm),
       ],
     ];
