@@ -12,9 +12,10 @@ The Posts tab shows the live publications list with local case-insensitive title
 
 Each post opens a deep-link-compatible details route (`/posts/:id`) with the full text and its comments, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
 
+The Users tab lists all authors with local search across name, username, email, and company, plus pull-to-refresh and dedicated loading, empty, and error states. Each user opens a deep-link-compatible profile route (`/users/:id`) with contact and company details and the user's publications, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
+
 ## Upcoming
 
-- Users list and user profile with their posts
 - At least one create/edit/delete operation
 - Local favorites (persisted with SharedPreferences)
 

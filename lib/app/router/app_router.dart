@@ -6,6 +6,7 @@ import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/posts/presentation/post_details_page.dart';
 import '../../features/posts/presentation/posts_page.dart';
+import '../../features/users/presentation/user_profile_page.dart';
 import '../../features/users/presentation/users_page.dart';
 import '../shell/app_shell.dart';
 import 'app_routes.dart';
@@ -53,6 +54,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.users,
                 builder: (context, state) => const UsersPage(),
+                routes: [
+                  GoRoute(
+                    path: AppRoutes.userProfileSegment,
+                    builder: (context, state) {
+                      final userId = int.tryParse(
+                        state.pathParameters['userId'] ?? '',
+                      );
+                      if (userId == null || userId <= 0) {
+                        return const UserUnavailablePage();
+                      }
+                      return UserProfilePage(userId: userId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

@@ -162,4 +162,53 @@ void main() {
       expect(requested, isFalse);
     });
   });
+
+  group('PostsRemoteDataSourceImpl.getPostsForUser', () {
+    test('requests /users/{id}/posts and parses the list in order', () async {
+      final dataSource = _dataSourceWith((options) async {
+        expect(options.path, '/users/7/posts');
+        return _jsonResponse([
+          {'userId': 7, 'id': 30, 'title': 'third', 'body': 'body three'},
+          {'userId': 7, 'id': 10, 'title': 'first', 'body': 'body one'},
+        ]);
+      });
+
+      final posts = await dataSource.getPostsForUser(7);
+
+      expect(posts, const [
+        PostDto(userId: 7, id: 30, title: 'third', body: 'body three'),
+        PostDto(userId: 7, id: 10, title: 'first', body: 'body one'),
+      ]);
+    });
+
+    test('throws ParsingException when the body is not a list', () {
+      final dataSource = _dataSourceWith(
+        (_) async => _jsonResponse({'unexpected': 'object'}),
+      );
+
+      expect(dataSource.getPostsForUser(7), throwsA(isA<ParsingException>()));
+    });
+
+    test('throws ParsingException when a list item is malformed', () {
+      final dataSource = _dataSourceWith(
+        (_) async => _jsonResponse([
+          {'userId': 'not-a-number', 'id': 20, 'title': 't', 'body': 'b'},
+        ]),
+      );
+
+      expect(dataSource.getPostsForUser(7), throwsA(isA<ParsingException>()));
+    });
+
+    test('rejects non-positive user IDs without performing a request', () {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse([]);
+      });
+
+      expect(dataSource.getPostsForUser(0), throwsA(isA<NotFoundException>()));
+      expect(dataSource.getPostsForUser(-1), throwsA(isA<NotFoundException>()));
+      expect(requested, isFalse);
+    });
+  });
 }

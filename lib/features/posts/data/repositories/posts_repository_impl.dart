@@ -31,6 +31,16 @@ class PostsRepositoryImpl implements PostsRepository {
       throw mapExceptionToFailure(exception);
     }
   }
+
+  @override
+  Future<List<Post>> getPostsForUser(int userId) async {
+    try {
+      final dtos = await _remoteDataSource.getPostsForUser(userId);
+      return dtos.map(postFromDto).toList(growable: false);
+    } on AppException catch (exception) {
+      throw mapExceptionToFailure(exception);
+    }
+  }
 }
 
 final postsRepositoryProvider = Provider<PostsRepository>(

@@ -5,4 +5,6 @@ abstract final class AppRoutes {
   static const String favorites = '/favorites';
   static const String postDetailsSegment = ':postId';
   static String postDetails(int postId) => '$posts/$postId';
+  static const String userProfileSegment = ':userId';
+  static String userProfile(int userId) => '$users/$userId';
 }

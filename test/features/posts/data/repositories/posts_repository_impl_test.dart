@@ -102,4 +102,47 @@ void main() {
       expect(repository.getPost(0), throwsA(isA<NotFoundFailure>()));
     });
   });
+
+  group('PostsRepositoryImpl.getPostsForUser', () {
+    test('maps DTOs to domain entities preserving order', () async {
+      when(() => dataSource.getPostsForUser(7)).thenAnswer(
+        (_) async => const [
+          PostDto(userId: 7, id: 9, title: 'b', body: 'b'),
+          PostDto(userId: 7, id: 2, title: 'a', body: 'a'),
+        ],
+      );
+
+      final posts = await repository.getPostsForUser(7);
+
+      expect(posts, const [
+        Post(id: 9, authorId: 7, title: 'b', body: 'b'),
+        Post(id: 2, authorId: 7, title: 'a', body: 'a'),
+      ]);
+    });
+
+    test('maps NetworkException to NetworkFailure', () {
+      when(
+        () => dataSource.getPostsForUser(7),
+      ).thenThrow(const NetworkException());
+
+      expect(repository.getPostsForUser(7), throwsA(isA<NetworkFailure>()));
+    });
+
+    test('maps ServerException to ServerFailure keeping the status code', () {
+      when(
+        () => dataSource.getPostsForUser(7),
+      ).thenThrow(const ServerException(statusCode: 502));
+
+      expect(
+        repository.getPostsForUser(7),
+        throwsA(
+          isA<ServerFailure>().having(
+            (failure) => failure.statusCode,
+            'statusCode',
+            502,
+          ),
+        ),
+      );
+    });
+  });
 }

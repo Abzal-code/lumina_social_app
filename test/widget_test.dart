@@ -21,6 +21,9 @@ class _FakePostsRepository implements PostsRepository {
 
   @override
   Future<Post> getPost(int postId) async => _post;
+
+  @override
+  Future<List<Post>> getPostsForUser(int userId) async => const [_post];
 }
 
 Future<void> pumpApp(WidgetTester tester) async {

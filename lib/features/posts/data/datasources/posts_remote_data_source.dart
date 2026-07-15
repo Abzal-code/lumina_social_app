@@ -9,6 +9,8 @@ abstract interface class PostsRemoteDataSource {
   Future<List<PostDto>> getPosts();
 
   Future<PostDto> getPost(int postId);
+
+  Future<List<PostDto>> getPostsForUser(int userId);
 }
 
 class PostsRemoteDataSourceImpl implements PostsRemoteDataSource {
@@ -34,6 +36,21 @@ class PostsRemoteDataSourceImpl implements PostsRemoteDataSource {
     }
     final data = await _client.get('/posts/$postId');
     return _parsePost(data);
+  }
+
+  @override
+  Future<List<PostDto>> getPostsForUser(int userId) async {
+    if (userId <= 0) {
+      throw NotFoundException('Invalid user id: $userId');
+    }
+    final data = await _client.get('/users/$userId/posts');
+    if (data is! List) {
+      throw ParsingException(
+        'Expected a JSON list for /users/$userId/posts, '
+        'got ${data.runtimeType}',
+      );
+    }
+    return data.map(_parsePost).toList(growable: false);
   }
 
   PostDto _parsePost(Object? element) {

@@ -21,7 +21,7 @@ class PostCard extends StatelessWidget {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => context.go(AppRoutes.postDetails(post.id)),
+          onTap: () => context.push(AppRoutes.postDetails(post.id)),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
