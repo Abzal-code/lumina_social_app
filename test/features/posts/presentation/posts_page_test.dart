@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumina/app/theme/app_theme.dart';
 import 'package:lumina/core/error/app_failure.dart';
+import 'package:lumina/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
 import 'package:lumina/features/posts/domain/entities/post.dart';
 import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
@@ -12,6 +13,8 @@ import 'package:lumina/features/posts/presentation/posts_page.dart';
 import 'package:lumina/features/posts/presentation/widgets/post_card.dart';
 import 'package:lumina/features/posts/presentation/widgets/posts_loading_view.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../helpers/fake_repositories.dart';
 
 class _MockPostsRepository extends Mock implements PostsRepository {}
 
@@ -30,7 +33,12 @@ void main() {
   Future<void> pumpPostsPage(WidgetTester tester) {
     return tester.pumpWidget(
       ProviderScope(
-        overrides: [postsRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          postsRepositoryProvider.overrideWithValue(repository),
+          favoritesRepositoryProvider.overrideWithValue(
+            FakeFavoritesRepository(),
+          ),
+        ],
         child: MaterialApp(theme: AppTheme.light, home: const PostsPage()),
       ),
     );

@@ -13,6 +13,8 @@ import '../../../core/widgets/skeleton_bar.dart';
 import '../../comments/presentation/widgets/comment_card.dart';
 import '../../comments/presentation/widgets/comments_empty_view.dart';
 import '../../comments/presentation/widgets/comments_loading_view.dart';
+import '../../favorites/application/favorites_controller.dart';
+import '../../favorites/presentation/widgets/favorite_icon_button.dart';
 import '../application/post_details_controller.dart';
 import '../application/post_details_state.dart';
 import '../domain/entities/post.dart';
@@ -45,8 +47,25 @@ class PostDetailsPage extends ConsumerWidget {
       }
     });
 
+    final post = state.post;
+    final favoritesState = ref.watch(favoritesControllerProvider);
+
     return AppScaffold(
       title: 'Post',
+      actions: [
+        if (post != null)
+          FavoriteIconButton(
+            postTitle: post.title,
+            isFavorite: favoritesState.isFavorite(post.id),
+            onPressed:
+                favoritesState.canToggle &&
+                    favoritesState.updatingPostId != post.id
+                ? () => ref
+                      .read(favoritesControllerProvider.notifier)
+                      .toggleFavorite(post.id)
+                : null,
+          ),
+      ],
       body: AdaptiveContent(
         child: _PostDetailsContent(state: state, controller: controller),
       ),

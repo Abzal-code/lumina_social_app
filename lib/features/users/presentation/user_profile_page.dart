@@ -10,6 +10,8 @@ import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton_bar.dart';
+import '../../favorites/application/favorites_controller.dart';
+import '../../favorites/application/favorites_state.dart';
 import '../../posts/presentation/widgets/post_card.dart';
 import '../application/user_profile_controller.dart';
 import '../application/user_profile_state.dart';
@@ -94,14 +96,14 @@ class UserUnavailablePage extends StatelessWidget {
   }
 }
 
-class _UserProfileContent extends StatelessWidget {
+class _UserProfileContent extends ConsumerWidget {
   const _UserProfileContent({required this.state, required this.controller});
 
   final UserProfileState state;
   final UserProfileController controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final user = state.user;
     if (user == null) {
       if (state.isUserLoading) {
@@ -118,6 +120,9 @@ class _UserProfileContent extends StatelessWidget {
       }
       return const _ProfileLoadingView();
     }
+
+    final favoritesState = ref.watch(favoritesControllerProvider);
+    final favoritesNotifier = ref.read(favoritesControllerProvider.notifier);
 
     return RefreshIndicator(
       onRefresh: controller.refreshPosts,
@@ -136,13 +141,16 @@ class _UserProfileContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.xl),
           const SectionHeader(title: 'Publications'),
           const SizedBox(height: AppSpacing.md),
-          ..._buildPublicationsSection(),
+          ..._buildPublicationsSection(favoritesState, favoritesNotifier),
         ],
       ),
     );
   }
 
-  List<Widget> _buildPublicationsSection() {
+  List<Widget> _buildPublicationsSection(
+    FavoritesState favoritesState,
+    FavoritesController favoritesNotifier,
+  ) {
     if (state.arePostsLoading && state.posts.isEmpty) {
       return const [_PublicationsLoadingView()];
     }
@@ -159,13 +167,17 @@ class _UserProfileContent extends StatelessWidget {
       return const [_PublicationsEmptyView()];
     }
     return [
-      for (var index = 0; index < state.posts.length; index++) ...[
+      for (final post in state.posts) ...[
         PostCard(
-          key: ValueKey(state.posts[index].id),
-          post: state.posts[index],
+          key: ValueKey(post.id),
+          post: post,
+          isFavorite: favoritesState.isFavorite(post.id),
+          isFavoriteUpdating: favoritesState.updatingPostId == post.id,
+          onFavoritePressed: favoritesState.canToggle
+              ? () => favoritesNotifier.toggleFavorite(post.id)
+              : null,
         ),
-        if (index < state.posts.length - 1)
-          const SizedBox(height: AppSpacing.sm),
+        if (post != state.posts.last) const SizedBox(height: AppSpacing.sm),
       ],
     ];
   }

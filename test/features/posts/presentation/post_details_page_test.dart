@@ -12,12 +12,15 @@ import 'package:lumina/features/comments/domain/entities/comment.dart';
 import 'package:lumina/features/comments/domain/repositories/comments_repository.dart';
 import 'package:lumina/features/comments/presentation/widgets/comment_card.dart';
 import 'package:lumina/features/comments/presentation/widgets/comments_loading_view.dart';
+import 'package:lumina/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
 import 'package:lumina/features/posts/domain/entities/post.dart';
 import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
 import 'package:lumina/features/posts/presentation/post_details_page.dart';
 import 'package:lumina/features/posts/presentation/widgets/post_card.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../helpers/fake_repositories.dart';
 
 class _MockPostsRepository extends Mock implements PostsRepository {}
 
@@ -69,6 +72,9 @@ void main() {
         overrides: [
           postsRepositoryProvider.overrideWithValue(postsRepository),
           commentsRepositoryProvider.overrideWithValue(commentsRepository),
+          favoritesRepositoryProvider.overrideWithValue(
+            FakeFavoritesRepository(),
+          ),
         ],
         child: const LuminaApp(),
       ),

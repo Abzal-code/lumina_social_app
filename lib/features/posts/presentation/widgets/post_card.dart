@@ -3,12 +3,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/theme/app_spacing.dart';
+import '../../../favorites/presentation/widgets/favorite_icon_button.dart';
 import '../../domain/entities/post.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({super.key, required this.post});
+  const PostCard({
+    super.key,
+    required this.post,
+    this.isFavorite = false,
+    this.onFavoritePressed,
+    this.isFavoriteUpdating = false,
+  });
 
   final Post post;
+  final bool isFavorite;
+  final VoidCallback? onFavoritePressed;
+  final bool isFavoriteUpdating;
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +45,20 @@ class PostCard extends StatelessWidget {
                       color: colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      'Author ${post.authorId}',
-                      style: textTheme.labelMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        'Author ${post.authorId}',
+                        style: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: .ellipsis,
                       ),
+                    ),
+                    FavoriteIconButton(
+                      postTitle: post.title,
+                      isFavorite: isFavorite,
+                      onPressed: isFavoriteUpdating ? null : onFavoritePressed,
                     ),
                   ],
                 ),

@@ -5,6 +5,8 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/presentation/failure_messages.dart';
+import '../../favorites/application/favorites_controller.dart';
+import '../../favorites/application/favorites_state.dart';
 import '../application/posts_controller.dart';
 import '../application/posts_state.dart';
 import 'widgets/post_card.dart';
@@ -59,14 +61,14 @@ class PostsPage extends ConsumerWidget {
   }
 }
 
-class _PostsContent extends StatelessWidget {
+class _PostsContent extends ConsumerWidget {
   const _PostsContent({required this.state, required this.controller});
 
   final PostsState state;
   final PostsController controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (state.isInitialLoading) {
       return const PostsLoadingView();
     }
@@ -76,13 +78,18 @@ class _PostsContent extends StatelessWidget {
         onRetry: controller.retry,
       );
     }
+    final favoritesState = ref.watch(favoritesControllerProvider);
+    final favoritesNotifier = ref.read(favoritesControllerProvider.notifier);
     return RefreshIndicator(
       onRefresh: controller.refresh,
-      child: _buildScrollableContent(),
+      child: _buildScrollableContent(favoritesState, favoritesNotifier),
     );
   }
 
-  Widget _buildScrollableContent() {
+  Widget _buildScrollableContent(
+    FavoritesState favoritesState,
+    FavoritesController favoritesNotifier,
+  ) {
     if (state.posts.isEmpty) {
       return _fillViewport(const PostsEmptyView.noPosts());
     }
@@ -100,7 +107,15 @@ class _PostsContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final post = visiblePosts[index];
-        return PostCard(key: ValueKey(post.id), post: post);
+        return PostCard(
+          key: ValueKey(post.id),
+          post: post,
+          isFavorite: favoritesState.isFavorite(post.id),
+          isFavoriteUpdating: favoritesState.updatingPostId == post.id,
+          onFavoritePressed: favoritesState.canToggle
+              ? () => favoritesNotifier.toggleFavorite(post.id)
+              : null,
+        );
       },
     );
   }

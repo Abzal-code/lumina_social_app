@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class AppShell extends StatelessWidget {
+import '../../features/favorites/application/favorites_controller.dart';
+import '../../features/favorites/application/favorites_state.dart';
+
+class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
@@ -14,8 +18,31 @@ class AppShell extends StatelessWidget {
     );
   }
 
+  void _listenForFavoriteFailures(WidgetRef ref, BuildContext context) {
+    ref.listen<FavoritesState>(favoritesControllerProvider, (previous, next) {
+      final toggleFailed =
+          previous?.updatingPostId != null &&
+          next.updatingPostId == null &&
+          next.toggleFailure != null;
+
+      if (!toggleFailed) return;
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Couldn’t update favorites. Please try again.'),
+          ),
+        );
+    });
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Single app-level listener: pages on several tabs stay alive at once,
+    // so per-page listeners would show duplicate SnackBars for one failure.
+    _listenForFavoriteFailures(ref, context);
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(

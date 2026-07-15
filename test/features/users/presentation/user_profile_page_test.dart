@@ -10,6 +10,7 @@ import 'package:lumina/core/error/app_failure.dart';
 import 'package:lumina/core/widgets/skeleton_bar.dart';
 import 'package:lumina/features/comments/data/repositories/comments_repository_impl.dart';
 import 'package:lumina/features/comments/domain/repositories/comments_repository.dart';
+import 'package:lumina/features/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
 import 'package:lumina/features/posts/domain/entities/post.dart';
 import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
@@ -24,6 +25,8 @@ import 'package:lumina/features/users/domain/repositories/users_repository.dart'
 import 'package:lumina/features/users/presentation/user_profile_page.dart';
 import 'package:lumina/features/users/presentation/widgets/user_card.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../helpers/fake_repositories.dart';
 
 class _MockUsersRepository extends Mock implements UsersRepository {}
 
@@ -105,6 +108,9 @@ void main() {
           usersRepositoryProvider.overrideWithValue(usersRepository),
           postsRepositoryProvider.overrideWithValue(postsRepository),
           commentsRepositoryProvider.overrideWithValue(commentsRepository),
+          favoritesRepositoryProvider.overrideWithValue(
+            FakeFavoritesRepository(),
+          ),
         ],
         child: const LuminaApp(),
       ),

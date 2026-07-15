@@ -14,10 +14,11 @@ Each post opens a deep-link-compatible details route (`/posts/:id`) with the ful
 
 The Users tab lists all authors with local search across name, username, email, and company, plus pull-to-refresh and dedicated loading, empty, and error states. Each user opens a deep-link-compatible profile route (`/users/:id`) with contact and company details and the user's publications, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
 
+Posts can be bookmarked as favorites from the posts list, post details, and user profiles. Favorite post IDs are persisted with SharedPreferences and restored on startup; favorite state lives separately from `Post` entities and is derived by post ID, so toggling a bookmark updates every screen at once without refetching content. The Favorites tab shows the bookmarked posts in ascending post ID order, reusing already loaded posts and fetching the rest individually.
+
 ## Upcoming
 
 - At least one create/edit/delete operation
-- Local favorites (persisted with SharedPreferences)
 
 ## Tech stack
 
@@ -26,6 +27,7 @@ The Users tab lists all authors with local search across name, username, email, 
 - go_router `StatefulShellRoute.indexedStack` for state-preserving bottom-tab navigation
 - Centralized design tokens (colors, spacing, radius, typography) feeding a single Material 3 theme
 - Freezed + json_serializable (immutable models & DTO parsing)
+- SharedPreferences (local persistence of favorite post IDs)
 
 ## Getting started
 
