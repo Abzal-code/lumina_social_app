@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lumina/core/error/app_failure.dart';
 import 'package:lumina/features/posts/application/posts_controller.dart';
 import 'package:lumina/features/posts/application/posts_state.dart';
-import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
+import 'package:lumina/features/posts/di.dart';
 import 'package:lumina/features/posts/domain/entities/post.dart';
 import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
 import 'package:mocktail/mocktail.dart';

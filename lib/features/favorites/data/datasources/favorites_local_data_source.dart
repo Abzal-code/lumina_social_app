@@ -1,8 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/app_exception.dart';
-import '../../../../core/storage/shared_preferences_provider.dart';
 
 /// Implementations throw [AppException] subtypes on error.
 abstract interface class FavoritesLocalDataSource {
@@ -75,9 +73,3 @@ class SharedPreferencesFavoritesDataSource implements FavoritesLocalDataSource {
     }
   }
 }
-
-final favoritesLocalDataSourceProvider = Provider<FavoritesLocalDataSource>(
-  (ref) => SharedPreferencesFavoritesDataSource(
-    ref.watch(sharedPreferencesProvider.future),
-  ),
-);

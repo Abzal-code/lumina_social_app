@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
-import '../data/repositories/posts_repository_impl.dart';
+import '../di.dart';
 import '../domain/entities/post.dart';
 import 'post_change_propagation.dart';
 import 'post_form_state.dart';

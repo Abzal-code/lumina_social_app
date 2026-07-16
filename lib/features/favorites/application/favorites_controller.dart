@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
-import '../data/repositories/favorites_repository_impl.dart';
+import '../di.dart';
 import 'favorites_state.dart';
 
 part 'favorites_controller.g.dart';

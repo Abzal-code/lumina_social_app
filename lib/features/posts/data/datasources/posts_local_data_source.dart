@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/error/app_exception.dart';
-import '../../../../core/storage/shared_preferences_provider.dart';
 import '../../domain/entities/post.dart';
 import '../models/local_post_changes.dart';
 
@@ -287,9 +285,3 @@ class SharedPreferencesPostsLocalDataSource implements PostsLocalDataSource {
     }
   }
 }
-
-final postsLocalDataSourceProvider = Provider<PostsLocalDataSource>(
-  (ref) => SharedPreferencesPostsLocalDataSource(
-    ref.watch(sharedPreferencesProvider.future),
-  ),
-);

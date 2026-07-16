@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumina/app/theme/app_theme.dart';
 import 'package:lumina/core/error/app_failure.dart';
-import 'package:lumina/features/users/data/repositories/users_repository_impl.dart';
+import 'package:lumina/features/users/di.dart';
 import 'package:lumina/features/users/domain/entities/address.dart';
 import 'package:lumina/features/users/domain/entities/company.dart';
 import 'package:lumina/features/users/domain/entities/geo_location.dart';

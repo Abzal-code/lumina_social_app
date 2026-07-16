@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
-import '../../posts/data/repositories/posts_repository_impl.dart';
-import '../data/repositories/users_repository_impl.dart';
+import '../../posts/di.dart';
+import '../di.dart';
 import '../domain/entities/user.dart';
 import 'user_profile_state.dart';
 import 'users_controller.dart';

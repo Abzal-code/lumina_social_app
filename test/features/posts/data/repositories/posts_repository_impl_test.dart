@@ -371,15 +371,15 @@ void main() {
     test('rejects invalid input before any network call', () async {
       await expectLater(
         repository.createPost(authorId: 0, title: 't', body: 'b'),
-        throwsA(isA<NotFoundFailure>()),
+        throwsA(isA<ValidationFailure>()),
       );
       await expectLater(
         repository.createPost(authorId: 1, title: '  ', body: 'b'),
-        throwsA(isA<UnexpectedFailure>()),
+        throwsA(isA<ValidationFailure>()),
       );
       await expectLater(
         repository.createPost(authorId: 1, title: 't', body: ''),
-        throwsA(isA<UnexpectedFailure>()),
+        throwsA(isA<ValidationFailure>()),
       );
       verifyNever(
         () => dataSource.createPost(
@@ -493,7 +493,7 @@ void main() {
       );
       await expectLater(
         repository.updatePost(postId: 2, authorId: 1, title: '', body: 'b'),
-        throwsA(isA<UnexpectedFailure>()),
+        throwsA(isA<ValidationFailure>()),
       );
       verifyNever(
         () => dataSource.updatePost(

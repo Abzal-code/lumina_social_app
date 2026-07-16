@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
 import '../../posts/application/posts_controller.dart';
-import '../../posts/data/repositories/posts_repository_impl.dart';
+import '../../posts/di.dart';
 import '../../posts/domain/entities/post.dart';
 import 'favorites_controller.dart';
 import 'favorites_feed_state.dart';

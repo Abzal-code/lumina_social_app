@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/network/api_client.dart';
 import '../dto/comment_dto.dart';
@@ -44,7 +42,3 @@ class CommentsRemoteDataSourceImpl implements CommentsRemoteDataSource {
     }
   }
 }
-
-final commentsRemoteDataSourceProvider = Provider<CommentsRemoteDataSource>(
-  (ref) => CommentsRemoteDataSourceImpl(ref.watch(apiClientProvider)),
-);

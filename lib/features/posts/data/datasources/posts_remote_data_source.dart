@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/network/api_client.dart';
 import '../dto/post_dto.dart';
@@ -148,7 +146,3 @@ class PostsRemoteDataSourceImpl implements PostsRemoteDataSource {
     }
   }
 }
-
-final postsRemoteDataSourceProvider = Provider<PostsRemoteDataSource>(
-  (ref) => PostsRemoteDataSourceImpl(ref.watch(apiClientProvider)),
-);

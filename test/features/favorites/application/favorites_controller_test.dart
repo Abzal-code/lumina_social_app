@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lumina/core/error/app_failure.dart';
 import 'package:lumina/features/favorites/application/favorites_controller.dart';
 import 'package:lumina/features/favorites/application/favorites_state.dart';
-import 'package:lumina/features/favorites/data/repositories/favorites_repository_impl.dart';
+import 'package:lumina/features/favorites/di.dart';
 import 'package:lumina/features/favorites/domain/repositories/favorites_repository.dart';
 import 'package:mocktail/mocktail.dart';
 

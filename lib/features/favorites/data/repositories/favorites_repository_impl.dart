@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/failure_mapper.dart';
 import '../../domain/repositories/favorites_repository.dart';
@@ -37,7 +35,3 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
     }
   }
 }
-
-final favoritesRepositoryProvider = Provider<FavoritesRepository>(
-  (ref) => FavoritesRepositoryImpl(ref.watch(favoritesLocalDataSourceProvider)),
-);

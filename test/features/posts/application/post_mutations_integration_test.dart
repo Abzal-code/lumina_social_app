@@ -1,15 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumina/features/comments/data/repositories/comments_repository_impl.dart';
+import 'package:lumina/features/comments/di.dart';
 import 'package:lumina/features/comments/domain/repositories/comments_repository.dart';
-import 'package:lumina/features/favorites/data/repositories/favorites_repository_impl.dart';
+import 'package:lumina/features/favorites/di.dart';
 import 'package:lumina/features/posts/application/post_details_controller.dart';
 import 'package:lumina/features/posts/application/post_form_controller.dart';
 import 'package:lumina/features/posts/application/posts_controller.dart';
 import 'package:lumina/features/posts/data/datasources/posts_remote_data_source.dart';
 import 'package:lumina/features/posts/data/dto/post_dto.dart';
 import 'package:lumina/features/posts/data/repositories/posts_repository_impl.dart';
-import 'package:lumina/features/users/data/repositories/users_repository_impl.dart';
+import 'package:lumina/features/posts/di.dart';
+import 'package:lumina/features/users/di.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../helpers/fake_repositories.dart';
@@ -95,6 +96,13 @@ void main() {
     final created = await container
         .read(postFormControllerProvider(null).notifier)
         .submit(authorId: 1, title: 'Created', body: 'cb');
+    final editFormSubscription = container.listen(
+      postFormControllerProvider(1),
+      (previous, next) {},
+    );
+    addTearDown(editFormSubscription.close);
+    // Submitting is ignored until the edit form finishes prefilling.
+    await pumpEventQueue();
     await container
         .read(postFormControllerProvider(1).notifier)
         .submit(authorId: 1, title: 'Edited one', body: 'e1');
@@ -127,12 +135,19 @@ void main() {
     final container = createContainer();
     await pumpEventQueue();
 
+    final editFormSubscription = container.listen(
+      postFormControllerProvider(2),
+      (previous, next) {},
+    );
+    addTearDown(editFormSubscription.close);
+    // Submitting is ignored until the edit form finishes prefilling.
+    await pumpEventQueue();
+    // The edit form itself fetches the post once for prefill.
+    verify(() => remoteDataSource.getPost(2)).called(1);
     await container
         .read(postFormControllerProvider(2).notifier)
         .submit(authorId: 2, title: 'Edited two', body: 'e2');
     await pumpEventQueue();
-    // The edit form itself fetches the post once for prefill.
-    verify(() => remoteDataSource.getPost(2)).called(1);
 
     final detailsSubscription = container.listen(
       postDetailsControllerProvider(2),

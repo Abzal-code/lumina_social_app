@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/failure_mapper.dart';
@@ -233,10 +231,3 @@ class PostsRepositoryImpl implements PostsRepository {
     return trimmed;
   }
 }
-
-final postsRepositoryProvider = Provider<PostsRepository>(
-  (ref) => PostsRepositoryImpl(
-    ref.watch(postsRemoteDataSourceProvider),
-    ref.watch(postsLocalDataSourceProvider),
-  ),
-);

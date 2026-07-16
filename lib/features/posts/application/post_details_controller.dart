@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
-import '../../comments/data/repositories/comments_repository_impl.dart';
-import '../data/repositories/posts_repository_impl.dart';
+import '../../comments/di.dart';
+import '../di.dart';
 import '../domain/entities/post.dart';
 import 'posts_controller.dart';
 import 'post_details_state.dart';

@@ -36,7 +36,20 @@ Known limitation: if the remote call succeeds but local persistence then fails, 
 
 Deleting a post also removes its bookmark, coordinated at the application layer — the posts repository knows nothing about favorites. If removing the bookmark fails, the deletion itself stands and the favorites failure is reported through the standard favorites feedback. Editing a post preserves its favorite status, and new posts start unbookmarked. Locally created posts cannot be bookmarked, since favorite storage validates server-assigned IDs.
 
-## Architecture notes
+## Architecture
+
+The codebase is feature-first: `lib/features/<feature>/` holds posts, users, comments, and favorites, with shared infrastructure in `lib/core/` (networking, storage, error mapping, design-system widgets) and app-level composition in `lib/app/` (theme, router, navigation shell).
+
+Each feature is split into layers with dependencies pointing inward:
+
+- **domain** — entities and abstract repositories; depends on no other layer.
+- **data** — DTOs, remote/local data sources, mappers, and repository implementations; depends only on domain and core.
+- **application** — Riverpod controllers and screen state; depends on domain and the feature's DI file.
+- **presentation** — pages and widgets; depends on application, domain, and shared UI components.
+
+Provider registrations live outside the layers in a per-feature composition root, `lib/features/<feature>/di.dart`, which wires data sources and repositories behind their domain interfaces (`Provider<PostsRepository>` and so on). No layer declares providers itself, so application code never imports the data layer, and tests replace any dependency with `ProviderScope` overrides.
+
+Other notable decisions:
 
 - State synchronization after a mutation is push-based: active controllers are patched in place (posts list, open details, favorites feed cache) so screens update without refetch flicker and the search query survives, while user profiles are invalidated and re-read through the overlay because an edit can move a post between authors.
 - Author selection in the post form uses the loaded users list; if it cannot be loaded, the form falls back to a validated numeric author ID field rather than blocking submission.
@@ -50,6 +63,16 @@ Deleting a post also removes its bookmark, coordinated at the application layer 
 - Centralized design tokens (colors, spacing, radius, typography) feeding a single Material 3 theme
 - Freezed + json_serializable (immutable models & DTO parsing)
 - SharedPreferences (local persistence of favorite post IDs and the post overlay)
+
+## Screenshots
+
+| Home | Posts | Post details |
+| --- | --- | --- |
+| ![Home](docs/screenshots/home.png) | ![Posts](docs/screenshots/posts.png) | ![Post details](docs/screenshots/post_details.png) |
+
+| Users | User profile | Favorites |
+| --- | --- | --- |
+| ![Users](docs/screenshots/users.png) | ![User profile](docs/screenshots/user_profile.png) | ![Favorites](docs/screenshots/favorites.png) |
 
 ## Getting started
 

@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/failure_mapper.dart';
 import '../../domain/entities/comment.dart';
@@ -22,7 +20,3 @@ class CommentsRepositoryImpl implements CommentsRepository {
     }
   }
 }
-
-final commentsRepositoryProvider = Provider<CommentsRepository>(
-  (ref) => CommentsRepositoryImpl(ref.watch(commentsRemoteDataSourceProvider)),
-);

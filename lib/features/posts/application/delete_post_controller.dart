@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/error/app_failure.dart';
 import '../../favorites/application/favorites_controller.dart';
-import '../data/repositories/posts_repository_impl.dart';
+import '../di.dart';
 import 'delete_post_state.dart';
 import 'post_change_propagation.dart';
 

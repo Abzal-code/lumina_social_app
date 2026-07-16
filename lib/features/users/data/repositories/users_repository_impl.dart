@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/failure_mapper.dart';
 import '../../domain/entities/user.dart';
@@ -32,7 +30,3 @@ class UsersRepositoryImpl implements UsersRepository {
     }
   }
 }
-
-final usersRepositoryProvider = Provider<UsersRepository>(
-  (ref) => UsersRepositoryImpl(ref.watch(usersRemoteDataSourceProvider)),
-);
