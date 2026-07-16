@@ -55,17 +55,11 @@ class PostCard extends StatelessWidget {
                         overflow: .ellipsis,
                       ),
                     ),
-                    // Locally created posts (negative IDs) cannot be
-                    // bookmarked; favorite storage only accepts
-                    // server-assigned IDs.
-                    if (post.id > 0)
-                      FavoriteIconButton(
-                        postTitle: post.title,
-                        isFavorite: isFavorite,
-                        onPressed: isFavoriteUpdating
-                            ? null
-                            : onFavoritePressed,
-                      ),
+                    FavoriteIconButton(
+                      postTitle: post.title,
+                      isFavorite: isFavorite,
+                      onPressed: isFavoriteUpdating ? null : onFavoritePressed,
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.sm),

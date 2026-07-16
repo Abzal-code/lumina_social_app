@@ -21,7 +21,7 @@ class FavoritesController extends _$FavoritesController {
 
   /// Applies the toggle optimistically and rolls back on persistence failure.
   Future<void> toggleFavorite(int postId) async {
-    if (postId <= 0 || !state.canToggle || state.isUpdating) {
+    if (postId == 0 || !state.canToggle || state.isUpdating) {
       return;
     }
     final previousIds = state.favoritePostIds;

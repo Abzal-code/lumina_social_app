@@ -96,9 +96,7 @@ class PostDetailsPage extends ConsumerWidget {
     return AppScaffold(
       title: 'Post',
       actions: [
-        // Locally created posts (negative IDs) cannot be bookmarked; favorite
-        // storage only accepts server-assigned IDs.
-        if (post != null && post.id > 0)
+        if (post != null)
           FavoriteIconButton(
             postTitle: post.title,
             isFavorite: favoritesState.isFavorite(post.id),

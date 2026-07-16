@@ -34,7 +34,7 @@ Known limitation: if the remote call succeeds but local persistence then fails, 
 
 ## Deletion and favorites
 
-Deleting a post also removes its bookmark, coordinated at the application layer — the posts repository knows nothing about favorites. If removing the bookmark fails, the deletion itself stands and the favorites failure is reported through the standard favorites feedback. Editing a post preserves its favorite status, and new posts start unbookmarked. Locally created posts cannot be bookmarked, since favorite storage validates server-assigned IDs.
+Deleting a post also removes its bookmark, coordinated at the application layer — the posts repository knows nothing about favorites. If removing the bookmark fails, the deletion itself stands and the favorites failure is reported through the standard favorites feedback. Editing a post preserves its favorite status, and new posts start unbookmarked. Locally created posts can be bookmarked like any other post: favorite storage accepts their negative IDs and rejects only the zero sentinel.
 
 ## Architecture
 

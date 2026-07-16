@@ -48,10 +48,10 @@ void main() {
       expect(await dataSource.getFavoritePostIds(), {1, 2});
     });
 
-    test('drops entries that are not positive integers', () async {
+    test('drops malformed and zero entries, keeping negative IDs', () async {
       final dataSource = dataSourceWith(['2', 'abc', '-1', '0', '1.5', '1']);
 
-      expect(await dataSource.getFavoritePostIds(), {1, 2});
+      expect(await dataSource.getFavoritePostIds(), {-1, 1, 2});
     });
   });
 
@@ -84,22 +84,26 @@ void main() {
     });
 
     test('writes back the cleaned set, dropping malformed entries', () async {
-      final dataSource = dataSourceWith(['2', 'abc', '-1', '1']);
+      final dataSource = dataSourceWith(['2', 'abc', '0', '1']);
 
       await dataSource.addFavorite(3);
 
       expect(await storedList(), ['1', '2', '3']);
     });
 
-    test('rejects non-positive IDs without writing', () async {
+    test('persists negative IDs of locally created posts', () async {
+      final dataSource = dataSourceWith(['1']);
+
+      await dataSource.addFavorite(-4);
+
+      expect(await storedList(), ['-4', '1']);
+    });
+
+    test('rejects the zero sentinel without writing', () async {
       final dataSource = dataSourceWith(['1']);
 
       await expectLater(
         dataSource.addFavorite(0),
-        throwsA(isA<NotFoundException>()),
-      );
-      await expectLater(
-        dataSource.addFavorite(-4),
         throwsA(isA<NotFoundException>()),
       );
       expect(await storedList(), ['1']);
@@ -115,7 +119,7 @@ void main() {
       expect(await storedList(), ['1']);
     });
 
-    test('rejects non-positive IDs without writing', () async {
+    test('rejects the zero sentinel without writing', () async {
       final dataSource = dataSourceWith(['1']);
 
       await expectLater(

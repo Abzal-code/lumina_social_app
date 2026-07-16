@@ -4,8 +4,9 @@ import '../../../../core/error/app_exception.dart';
 
 /// Implementations throw [AppException] subtypes on error.
 abstract interface class FavoritesLocalDataSource {
-  /// Stored entries that are not positive integers are dropped on read; the
-  /// cleaned set is written back by the next mutation.
+  /// Stored entries that are not non-zero integers are dropped on read; the
+  /// cleaned set is written back by the next mutation. Negative IDs are
+  /// valid: they belong to locally created posts.
   Future<Set<int>> getFavoritePostIds();
 
   Future<void> addFavorite(int postId);
@@ -27,7 +28,7 @@ class SharedPreferencesFavoritesDataSource implements FavoritesLocalDataSource {
       final entries = preferences.getStringList(_storageKey) ?? const [];
       return {
         for (final entry in entries)
-          if (int.tryParse(entry) case final int id when id > 0) id,
+          if (int.tryParse(entry) case final int id when id != 0) id,
       };
     } on AppException {
       rethrow;
@@ -51,7 +52,7 @@ class SharedPreferencesFavoritesDataSource implements FavoritesLocalDataSource {
   }
 
   void _validatePostId(int postId) {
-    if (postId <= 0) {
+    if (postId == 0) {
       throw NotFoundException('Invalid post id: $postId');
     }
   }

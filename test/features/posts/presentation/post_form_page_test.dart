@@ -8,7 +8,6 @@ import 'package:lumina/core/error/app_failure.dart';
 import 'package:lumina/features/comments/di.dart';
 import 'package:lumina/features/comments/domain/repositories/comments_repository.dart';
 import 'package:lumina/features/favorites/di.dart';
-import 'package:lumina/features/favorites/presentation/widgets/favorite_icon_button.dart';
 import 'package:lumina/features/posts/di.dart';
 import 'package:lumina/features/posts/domain/entities/post.dart';
 import 'package:lumina/features/posts/domain/repositories/posts_repository.dart';
@@ -179,9 +178,15 @@ void main() {
 
       expect(find.byType(PostDetailsPage), findsOneWidget);
       expect(find.text('Written locally'), findsOneWidget);
-      // Locally created posts cannot be bookmarked.
-      expect(find.byType(FavoriteIconButton), findsNothing);
       expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Add Fresh thoughts to favorites'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byTooltip('Remove Fresh thoughts from favorites'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a failed create stays on the form and keeps input', (

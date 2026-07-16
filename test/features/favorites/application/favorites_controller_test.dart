@@ -125,6 +125,16 @@ void main() {
       expect(state.toggleFailure, isA<UnexpectedFailure>());
       expect(state.updatingPostId, isNull);
     });
+
+    test('bookmarks a locally created post by its negative ID', () async {
+      final container = createContainer();
+      await pumpEventQueue();
+
+      await controllerOf(container).toggleFavorite(-3);
+
+      expect(stateOf(container).isFavorite(-3), isTrue);
+      verify(() => repository.addFavorite(-3)).called(1);
+    });
   });
 
   group('toggleFavorite remove', () {
@@ -239,12 +249,11 @@ void main() {
   });
 
   group('invalid IDs', () {
-    test('does not call the repository', () async {
+    test('ignores the zero sentinel without calling the repository', () async {
       final container = createContainer();
       await pumpEventQueue();
 
       await controllerOf(container).toggleFavorite(0);
-      await controllerOf(container).toggleFavorite(-3);
 
       verifyNever(() => repository.addFavorite(any()));
       verifyNever(() => repository.removeFavorite(any()));

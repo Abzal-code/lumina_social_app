@@ -120,6 +120,25 @@ void main() {
     expect(await favoritesRepository.getFavoritePostIds(), isEmpty);
   });
 
+  test('deleting a favorited locally created post removes and persists the '
+      'favorite', () async {
+    favoritesRepository = FakeFavoritesRepository(initialIds: {-1});
+    final container = createContainer();
+    final favoritesSubscription = container.listen(
+      favoritesControllerProvider,
+      (previous, next) {},
+    );
+    addTearDown(favoritesSubscription.close);
+    await pumpEventQueue();
+    expect(container.read(favoritesControllerProvider).isFavorite(-1), isTrue);
+
+    await controllerOf(container).deletePost(-1);
+    await pumpEventQueue();
+
+    expect(container.read(favoritesControllerProvider).isFavorite(-1), isFalse);
+    expect(await favoritesRepository.getFavoritePostIds(), isEmpty);
+  });
+
   test('deleting a non-favorited post leaves favorites untouched', () async {
     final container = createContainer();
     final favoritesSubscription = container.listen(
