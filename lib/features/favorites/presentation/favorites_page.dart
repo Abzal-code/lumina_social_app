@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router/app_routes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/empty_state_view.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../../posts/presentation/widgets/post_card.dart';
 import '../../posts/presentation/widgets/posts_loading_view.dart';
 import '../application/favorites_controller.dart';
 import '../application/favorites_feed_controller.dart';
 import '../application/favorites_feed_state.dart';
 import '../application/favorites_state.dart';
-import 'widgets/favorites_empty_view.dart';
 
 class FavoritesPage extends ConsumerWidget {
   const FavoritesPage({super.key});
@@ -57,14 +60,26 @@ class _FavoritesContent extends StatelessWidget {
     }
     final failure = feedState.failure;
     if (failure != null && feedState.posts.isEmpty) {
-      return _FavoritesErrorView(
+      return ErrorStateView(
+        title: 'Couldn’t load favorites',
         message: failure.userMessage,
         onRetry: onRetry,
       );
     }
     if (feedState.posts.isEmpty) {
-      return const Center(
-        child: SingleChildScrollView(child: FavoritesEmptyView()),
+      return Center(
+        child: SingleChildScrollView(
+          child: EmptyStateView(
+            icon: Icons.bookmark_outline,
+            title: 'No favorites yet',
+            message:
+                'Bookmark posts you want to revisit and they will appear here.',
+            action: FilledButton(
+              onPressed: () => context.go(AppRoutes.posts),
+              child: const Text('Browse posts'),
+            ),
+          ),
+        ),
       );
     }
     return ListView.separated(
@@ -88,43 +103,3 @@ class _FavoritesContent extends StatelessWidget {
   }
 }
 
-class _FavoritesErrorView extends StatelessWidget {
-  const _FavoritesErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final Future<void> Function() onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load favorites',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}

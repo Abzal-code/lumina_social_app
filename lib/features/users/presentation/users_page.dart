@@ -5,13 +5,14 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/app_search_field.dart';
+import '../../../core/widgets/empty_state_view.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../application/users_controller.dart';
 import '../application/users_state.dart';
 import '../domain/entities/user.dart';
 import 'widgets/user_card.dart';
-import 'widgets/users_empty_view.dart';
 import 'widgets/users_loading_view.dart';
-import 'widgets/users_search_field.dart';
 
 class UsersPage extends ConsumerWidget {
   const UsersPage({super.key});
@@ -44,7 +45,8 @@ class UsersPage extends ConsumerWidget {
           children: [
             if (showSearch) ...[
               const SizedBox(height: AppSpacing.sm),
-              UsersSearchField(
+              AppSearchField(
+                hintText: 'Search users',
                 query: state.query,
                 onQueryChanged: controller.setQuery,
               ),
@@ -72,7 +74,8 @@ class _UsersContent extends StatelessWidget {
       return const UsersLoadingView();
     }
     if (state.users.isEmpty && state.failure != null) {
-      return _UsersErrorView(
+      return ErrorStateView(
+        title: 'Couldn’t load users',
         message: state.failure!.userMessage,
         onRetry: controller.retry,
       );
@@ -85,12 +88,26 @@ class _UsersContent extends StatelessWidget {
 
   Widget _buildScrollableContent() {
     if (state.users.isEmpty) {
-      return _fillViewport(const UsersEmptyView.noUsers());
+      return _fillViewport(
+        const EmptyStateView(
+          icon: Icons.people_outlined,
+          title: 'No users yet',
+          message: 'User profiles will appear here once they are available.',
+        ),
+      );
     }
     final visibleUsers = state.visibleUsers;
     if (visibleUsers.isEmpty) {
       return _fillViewport(
-        UsersEmptyView.noResults(onClearSearch: controller.clearQuery),
+        EmptyStateView(
+          icon: Icons.search_off,
+          title: 'No matching users',
+          message: 'Try a different search term.',
+          action: OutlinedButton(
+            onPressed: controller.clearQuery,
+            child: const Text('Clear search'),
+          ),
+        ),
       );
     }
     return LayoutBuilder(
@@ -149,47 +166,6 @@ class _UsersList extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-class _UsersErrorView extends StatelessWidget {
-  const _UsersErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load users',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -2,21 +2,16 @@
 
 A Flutter client for the [JSONPlaceholder](https://jsonplaceholder.typicode.com) API: browse posts, comments, and users, search and filter content, create, edit, and delete posts, and keep local favorites.
 
-## Current status
+## Features
 
-The application foundation, design system, and navigation shell are implemented: centralized design tokens, reusable layout widgets, and four-tab bottom navigation (Home, Posts, Users, Favorites).
-
-The posts domain and data layers are in place: a Dio-based API client, DTO-to-entity mapping (`PostDto` → `Post`), and typed exception-to-failure mapping so repositories surface `AppFailure` values instead of raw transport errors.
-
-The Posts tab shows the live publications list with local case-insensitive title/body search, pull-to-refresh, and distinct loading, empty, and error states with retry.
-
-Each post opens a deep-link-compatible details route (`/posts/:id`) with the full text and its comments, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
-
-The Users tab lists all authors with local search across name, username, email, and company, plus pull-to-refresh and dedicated loading, empty, and error states. Each user opens a deep-link-compatible profile route (`/users/:id`) with contact and company details and the user's publications, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
-
-Posts can be bookmarked as favorites from the posts list, post details, and user profiles. Favorite post IDs are persisted with SharedPreferences and restored on startup; favorite state lives separately from `Post` entities and is derived by post ID, so toggling a bookmark updates every screen at once without refetching content. The Favorites tab shows the bookmarked posts in ascending post ID order, reusing already loaded posts and fetching the rest individually.
-
-Posts can be created from the Posts tab, and edited or deleted from their details page. Forms validate input inline, show submission progress, keep entered text on failure, and report success with product-level feedback. Deletion asks for confirmation and removes the post from every list, including Favorites.
+- Four-tab navigation — Home, Posts, Users, Favorites — with each tab's state preserved while switching.
+- Posts feed with case-insensitive title/body search, pull-to-refresh, and distinct loading, empty, and error states with retry.
+- Post details on a deep-link-compatible route (`/posts/:id`) with the full text and comments, which load independently with their own loading, empty, error/retry, and pull-to-refresh states.
+- Users directory with search across name, username, email, and company. Each profile (`/users/:id`) shows contact and company details plus the user's publications with the same independent state handling.
+- Creating, editing, and deleting posts with inline validation, submission progress, and input preserved on failure; deletion asks for confirmation and removes the post from every list, including Favorites.
+- Favorites toggle on every post card and details page. Bookmarked IDs persist in SharedPreferences and restore on startup; favorite state is derived by post ID, so one toggle updates every screen at once. The Favorites tab reuses already loaded posts and fetches the rest individually.
+- Adaptive layout: page content is width-capped and centered on large screens, the users list switches to two columns on wide layouts, and every screen stays usable from a small phone in landscape up to a tablet.
+- Typed error handling end to end: repositories map transport errors to `AppFailure` values, and the UI shows human-readable messages, never raw exceptions.
 
 ## Mutations and the local overlay
 
@@ -51,6 +46,7 @@ Provider registrations live outside the layers in a per-feature composition root
 
 Other notable decisions:
 
+- Shared UI building blocks live in `lib/core/widgets` — `EmptyStateView`, `ErrorStateView`, `AppSearchField`, skeletons, and the page scaffold — so every feature renders its states through the same components.
 - State synchronization after a mutation is push-based: active controllers are patched in place (posts list, open details, favorites feed cache) so screens update without refetch flicker and the search query survives, while user profiles are invalidated and re-read through the overlay because an edit can move a post between authors.
 - Author selection in the post form uses the loaded users list; if it cannot be loaded, the form falls back to a validated numeric author ID field rather than blocking submission.
 - Remote and local persistence stay in separate data sources behind a single repository; no DTOs or storage types leak past it.
@@ -63,6 +59,21 @@ Other notable decisions:
 - Centralized design tokens (colors, spacing, radius, typography) feeding a single Material 3 theme
 - Freezed + json_serializable (immutable models & DTO parsing)
 - SharedPreferences (local persistence of favorite post IDs and the post overlay)
+
+## Testing
+
+```sh
+flutter test
+```
+
+The suite covers the data layer (data sources, repositories, the mutation overlay), the application controllers, and widget tests for every screen, plus an adaptive-layout smoke test that walks the main flows on four screen sizes — from a small phone in landscape to a tablet — and fails on any layout overflow. All tests run against in-memory fakes and mocks; none require the real API or network access.
+
+Screenshots in `docs/screenshots/` are captured by an integration driver against the live API:
+
+```sh
+flutter drive --driver=test_driver/integration_test.dart \
+  --target=integration_test/screenshots.dart -d <device>
+```
 
 ## Screenshots
 

@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 
-class PostsSearchField extends StatefulWidget {
-  const PostsSearchField({
+/// Search input with a clear button, driven by an external [query] value.
+class AppSearchField extends StatefulWidget {
+  const AppSearchField({
     super.key,
+    required this.hintText,
     required this.query,
     required this.onQueryChanged,
   });
 
+  final String hintText;
   final String query;
   final ValueChanged<String> onQueryChanged;
 
   @override
-  State<PostsSearchField> createState() => _PostsSearchFieldState();
+  State<AppSearchField> createState() => _AppSearchFieldState();
 }
 
-class _PostsSearchFieldState extends State<PostsSearchField> {
+class _AppSearchFieldState extends State<AppSearchField> {
   late final TextEditingController _controller = TextEditingController(
     text: widget.query,
   );
 
   @override
-  void didUpdateWidget(PostsSearchField oldWidget) {
+  void didUpdateWidget(AppSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Sync only external query changes (e.g. clear-search actions); text
     // typed here already matches and must not reset the cursor.
@@ -42,7 +45,7 @@ class _PostsSearchFieldState extends State<PostsSearchField> {
       onChanged: widget.onQueryChanged,
       textInputAction: .search,
       decoration: InputDecoration(
-        hintText: 'Search posts',
+        hintText: widget.hintText,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: widget.query.isEmpty
             ? null

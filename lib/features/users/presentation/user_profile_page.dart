@@ -8,6 +8,8 @@ import '../../../core/error/app_failure.dart';
 import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/empty_state_view.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton_bar.dart';
 import '../../favorites/application/favorites_controller.dart';
@@ -111,7 +113,8 @@ class _UserProfileContent extends ConsumerWidget {
       }
       final failure = state.userFailure;
       if (failure != null) {
-        return _ProfileErrorView(
+        return ErrorStateView(
+          title: 'Couldn’t load this profile',
           message: failure is NotFoundFailure
               ? 'This profile is not available.'
               : failure.userMessage,
@@ -157,14 +160,21 @@ class _UserProfileContent extends ConsumerWidget {
     final failure = state.postsFailure;
     if (failure != null && state.posts.isEmpty) {
       return [
-        _PublicationsErrorView(
+        ErrorStateView.inline(
+          title: 'Couldn’t load publications',
           message: failure.userMessage,
           onRetry: controller.retryPosts,
         ),
       ];
     }
     if (state.posts.isEmpty) {
-      return const [_PublicationsEmptyView()];
+      return const [
+        EmptyStateView.inline(
+          icon: Icons.article_outlined,
+          title: 'No publications yet',
+          message: 'This user has not published anything.',
+        ),
+      ];
     }
     return [
       for (final post in state.posts) ...[
@@ -234,47 +244,6 @@ class _ProfileLoadingView extends StatelessWidget {
   }
 }
 
-class _ProfileErrorView extends StatelessWidget {
-  const _ProfileErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load this profile',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _PublicationsLoadingView extends StatelessWidget {
   const _PublicationsLoadingView();
 
@@ -316,69 +285,3 @@ class _SkeletonPublicationCard extends StatelessWidget {
   }
 }
 
-class _PublicationsErrorView extends StatelessWidget {
-  const _PublicationsErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          children: [
-            Text(
-              'Couldn’t load publications',
-              style: textTheme.titleMedium,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PublicationsEmptyView extends StatelessWidget {
-  const _PublicationsEmptyView();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-      child: Column(
-        children: [
-          Icon(Icons.article_outlined, size: 40, color: colorScheme.primary),
-          const SizedBox(height: AppSpacing.sm),
-          Text('No publications yet', style: textTheme.titleMedium),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'This user has not published anything.',
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            textAlign: .center,
-          ),
-        ],
-      ),
-    );
-  }
-}

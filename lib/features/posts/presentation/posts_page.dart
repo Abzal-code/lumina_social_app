@@ -4,17 +4,18 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
-import '../../../core/presentation/failure_messages.dart';
+import '../../../core/widgets/app_search_field.dart';
+import '../../../core/widgets/empty_state_view.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../../favorites/application/favorites_controller.dart';
 import '../../favorites/application/favorites_state.dart';
 import '../application/posts_controller.dart';
 import '../application/posts_state.dart';
 import 'widgets/post_card.dart';
-import 'widgets/posts_empty_view.dart';
 import 'widgets/posts_loading_view.dart';
-import 'widgets/posts_search_field.dart';
 
 class PostsPage extends ConsumerWidget {
   const PostsPage({super.key});
@@ -52,7 +53,8 @@ class PostsPage extends ConsumerWidget {
           children: [
             if (showSearch) ...[
               const SizedBox(height: AppSpacing.sm),
-              PostsSearchField(
+              AppSearchField(
+                hintText: 'Search posts',
                 query: state.query,
                 onQueryChanged: controller.setQuery,
               ),
@@ -80,7 +82,8 @@ class _PostsContent extends ConsumerWidget {
       return const PostsLoadingView();
     }
     if (state.posts.isEmpty && state.failure != null) {
-      return _PostsErrorView(
+      return ErrorStateView(
+        title: 'Couldn’t load posts',
         message: state.failure!.userMessage,
         onRetry: controller.retry,
       );
@@ -98,12 +101,26 @@ class _PostsContent extends ConsumerWidget {
     FavoritesController favoritesNotifier,
   ) {
     if (state.posts.isEmpty) {
-      return _fillViewport(const PostsEmptyView.noPosts());
+      return _fillViewport(
+        const EmptyStateView(
+          icon: Icons.inbox_outlined,
+          title: 'Nothing here yet',
+          message: 'New posts will appear here as soon as they are published.',
+        ),
+      );
     }
     final visiblePosts = state.visiblePosts;
     if (visiblePosts.isEmpty) {
       return _fillViewport(
-        PostsEmptyView.noResults(onClearSearch: controller.clearQuery),
+        EmptyStateView(
+          icon: Icons.search_off,
+          title: 'No matching posts',
+          message: 'Try a different search term.',
+          action: OutlinedButton(
+            onPressed: controller.clearQuery,
+            child: const Text('Clear search'),
+          ),
+        ),
       );
     }
     return ListView.separated(
@@ -133,45 +150,4 @@ class _PostsContent extends ConsumerWidget {
       SliverFillRemaining(hasScrollBody: false, child: Center(child: child)),
     ],
   );
-}
-
-class _PostsErrorView extends StatelessWidget {
-  const _PostsErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load posts',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -8,10 +8,11 @@ import '../../../core/error/app_failure.dart';
 import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/empty_state_view.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton_bar.dart';
 import '../../comments/presentation/widgets/comment_card.dart';
-import '../../comments/presentation/widgets/comments_empty_view.dart';
 import '../../comments/presentation/widgets/comments_loading_view.dart';
 import '../../favorites/application/favorites_controller.dart';
 import '../../favorites/presentation/widgets/favorite_icon_button.dart';
@@ -195,7 +196,8 @@ class _PostDetailsContent extends StatelessWidget {
       }
       final failure = state.postFailure;
       if (failure != null) {
-        return _PostErrorView(
+        return ErrorStateView(
+          title: 'Couldn’t load this post',
           message: failure is NotFoundFailure
               ? 'This post is no longer available.'
               : failure.userMessage,
@@ -231,14 +233,21 @@ class _PostDetailsContent extends StatelessWidget {
     final failure = state.commentsFailure;
     if (failure != null && state.comments.isEmpty) {
       return [
-        _CommentsErrorView(
+        ErrorStateView.inline(
+          title: 'Couldn’t load comments',
           message: failure.userMessage,
           onRetry: controller.retryComments,
         ),
       ];
     }
     if (state.comments.isEmpty) {
-      return const [CommentsEmptyView()];
+      return const [
+        EmptyStateView.inline(
+          icon: Icons.chat_bubble_outline,
+          title: 'No comments yet',
+          message: 'This post has not received any comments.',
+        ),
+      ];
     }
     return [
       for (var index = 0; index < state.comments.length; index++) ...[
@@ -312,85 +321,6 @@ class _PostLoadingView extends StatelessWidget {
         SizedBox(height: AppSpacing.sm),
         FractionallySizedBox(widthFactor: 0.5, child: SkeletonBar(height: 14)),
       ],
-    );
-  }
-}
-
-class _PostErrorView extends StatelessWidget {
-  const _PostErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load this post',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CommentsErrorView extends StatelessWidget {
-  const _CommentsErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          children: [
-            Text(
-              'Couldn’t load comments',
-              style: textTheme.titleMedium,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
     );
   }
 }

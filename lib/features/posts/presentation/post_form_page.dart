@@ -8,6 +8,7 @@ import '../../../core/error/app_failure.dart';
 import '../../../core/presentation/failure_messages.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/error_state_view.dart';
 import '../application/post_form_controller.dart';
 import '../domain/entities/post.dart';
 import 'widgets/post_form_fields.dart';
@@ -44,7 +45,8 @@ class PostFormPage extends ConsumerWidget {
     if (failure is NotFoundFailure) {
       return const _PostFormUnavailableView();
     }
-    return _PostFormLoadErrorView(
+    return ErrorStateView(
+      title: 'Couldn’t load this post',
       message: (failure ?? const UnexpectedFailure()).userMessage,
       onRetry: ref.read(postFormControllerProvider(postId).notifier).retryLoad,
     );
@@ -244,43 +246,3 @@ class _PostFormUnavailableView extends StatelessWidget {
   }
 }
 
-class _PostFormLoadErrorView extends StatelessWidget {
-  const _PostFormLoadErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(Icons.cloud_off_outlined, size: 56, color: colorScheme.error),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Couldn’t load this post',
-              style: textTheme.titleLarge,
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: .center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
-          ],
-        ),
-      ),
-    );
-  }
-}
