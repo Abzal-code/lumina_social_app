@@ -16,7 +16,8 @@ class PostDetailsController extends _$PostDetailsController {
 
   @override
   PostDetailsState build(int postId) {
-    if (postId <= 0) {
+    // Negative IDs belong to locally created posts and are valid here.
+    if (postId == 0) {
       return const PostDetailsState(postFailure: NotFoundFailure());
     }
     Future.microtask(() {
@@ -32,6 +33,14 @@ class PostDetailsController extends _$PostDetailsController {
   Future<void> retryPost() => _loadPost();
 
   Future<void> retryComments() => _loadComments();
+
+  /// Replaces the displayed post after an edit without refetching comments.
+  void applyPostUpdated(Post post) {
+    if (post.id != postId) {
+      return;
+    }
+    state = state.copyWith(post: post, isPostLoading: false, postFailure: null);
+  }
 
   /// Refreshes comments without discarding the currently displayed list.
   Future<void> refreshComments() async {
@@ -62,7 +71,7 @@ class PostDetailsController extends _$PostDetailsController {
   }
 
   Future<void> _loadPost() async {
-    if (postId <= 0 || _postRequestInFlight) {
+    if (postId == 0 || _postRequestInFlight) {
       return;
     }
     final loadedPost = _findAlreadyLoadedPost();
@@ -109,7 +118,17 @@ class PostDetailsController extends _$PostDetailsController {
   }
 
   Future<void> _loadComments() async {
-    if (postId <= 0 || _commentsRequestInFlight) {
+    if (postId == 0 || _commentsRequestInFlight) {
+      return;
+    }
+    // Locally created posts exist only on this device; the server holds no
+    // comments for them.
+    if (postId < 0) {
+      state = state.copyWith(
+        comments: const [],
+        areCommentsLoading: false,
+        commentsFailure: null,
+      );
       return;
     }
     _commentsRequestInFlight = true;

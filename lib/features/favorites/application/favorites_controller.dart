@@ -61,6 +61,15 @@ class FavoritesController extends _$FavoritesController {
     }
   }
 
+  /// Removes [postId] from favorites with the same optimistic/rollback
+  /// guarantees as [toggleFavorite]; no-ops when the post is not a favorite.
+  Future<void> removeFavorite(int postId) async {
+    if (!state.favoritePostIds.contains(postId)) {
+      return;
+    }
+    await toggleFavorite(postId);
+  }
+
   Future<void> _loadFavorites() async {
     if (_loadInFlight || state.isUpdating) {
       return;

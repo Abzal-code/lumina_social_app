@@ -227,6 +227,64 @@ void main() {
     expect(stateOf(container).posts, [_post(5)]);
   });
 
+  test(
+    'applyPostUpdated refreshes cached content without refetching',
+    () async {
+      when(
+        () => favoritesRepository.getFavoritePostIds(),
+      ).thenAnswer((_) async => {1});
+      when(() => postsRepository.getPost(1)).thenAnswer((_) async => _post(1));
+
+      final container = feedContainer();
+      await pumpEventQueue();
+      expect(stateOf(container).posts, [_post(1)]);
+
+      const edited = Post(id: 1, authorId: 1, title: 'Edited', body: 'eb');
+      container
+          .read(favoritesFeedControllerProvider.notifier)
+          .applyPostUpdated(edited);
+
+      expect(stateOf(container).posts, [edited]);
+      verify(() => postsRepository.getPost(1)).called(1);
+    },
+  );
+
+  test('applyPostUpdated ignores posts that are not cached', () async {
+    final container = feedContainer();
+    await pumpEventQueue();
+
+    container
+        .read(favoritesFeedControllerProvider.notifier)
+        .applyPostUpdated(_post(9));
+
+    expect(stateOf(container).posts, isEmpty);
+  });
+
+  test('applyPostDeleted drops the cached post', () async {
+    when(
+      () => favoritesRepository.getFavoritePostIds(),
+    ).thenAnswer((_) async => {1, 2});
+    for (final id in [1, 2]) {
+      when(
+        () => postsRepository.getPost(id),
+      ).thenAnswer((_) async => _post(id));
+    }
+
+    final container = feedContainer();
+    await pumpEventQueue();
+    expect(stateOf(container).posts.length, 2);
+
+    container
+        .read(favoritesFeedControllerProvider.notifier)
+        .applyPostDeleted(2);
+    await container
+        .read(favoritesControllerProvider.notifier)
+        .removeFavorite(2);
+    await pumpEventQueue();
+
+    expect(stateOf(container).posts, [_post(1)]);
+  });
+
   test('never fetches the same post twice', () async {
     when(
       () => favoritesRepository.getFavoritePostIds(),

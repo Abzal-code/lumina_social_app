@@ -15,14 +15,52 @@ import '../../comments/presentation/widgets/comments_empty_view.dart';
 import '../../comments/presentation/widgets/comments_loading_view.dart';
 import '../../favorites/application/favorites_controller.dart';
 import '../../favorites/presentation/widgets/favorite_icon_button.dart';
+import '../application/delete_post_controller.dart';
 import '../application/post_details_controller.dart';
 import '../application/post_details_state.dart';
 import '../domain/entities/post.dart';
+import 'widgets/delete_post_dialog.dart';
 
 class PostDetailsPage extends ConsumerWidget {
   const PostDetailsPage({super.key, required this.postId});
 
   final int postId;
+
+  Future<void> _deletePost(
+    BuildContext context,
+    WidgetRef ref,
+    Post post,
+  ) async {
+    final confirmed = await showDeletePostDialog(
+      context,
+      postTitle: post.title,
+    );
+    if (!confirmed || !context.mounted) {
+      return;
+    }
+    final deleted = await ref
+        .read(deletePostControllerProvider.notifier)
+        .deletePost(post.id);
+    if (!context.mounted) {
+      return;
+    }
+    final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+    if (deleted) {
+      messenger.showSnackBar(const SnackBar(content: Text('Post deleted')));
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go(AppRoutes.posts);
+      }
+      return;
+    }
+    final failure =
+        ref.read(deletePostControllerProvider).failure ??
+        const UnexpectedFailure();
+    messenger.showSnackBar(
+      SnackBar(content: Text('Couldn’t delete post. ${failure.userMessage}')),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,11 +87,18 @@ class PostDetailsPage extends ConsumerWidget {
 
     final post = state.post;
     final favoritesState = ref.watch(favoritesControllerProvider);
+    final isDeleting = ref.watch(
+      deletePostControllerProvider.select(
+        (deleteState) => deleteState.isDeleting,
+      ),
+    );
 
     return AppScaffold(
       title: 'Post',
       actions: [
-        if (post != null)
+        // Locally created posts (negative IDs) cannot be bookmarked; favorite
+        // storage only accepts server-assigned IDs.
+        if (post != null && post.id > 0)
           FavoriteIconButton(
             postTitle: post.title,
             isFavorite: favoritesState.isFavorite(post.id),
@@ -65,6 +110,30 @@ class PostDetailsPage extends ConsumerWidget {
                       .toggleFavorite(post.id)
                 : null,
           ),
+        if (post != null) ...[
+          IconButton(
+            tooltip: 'Edit post',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: isDeleting
+                ? null
+                : () => context.push(AppRoutes.postEdit(post.id)),
+          ),
+          if (isDeleting)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              tooltip: 'Delete post',
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _deletePost(context, ref, post),
+            ),
+        ],
       ],
       body: AdaptiveContent(
         child: _PostDetailsContent(state: state, controller: controller),

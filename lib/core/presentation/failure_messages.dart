@@ -11,5 +11,6 @@ extension AppFailureUserMessage on AppFailure {
     DataParsingFailure() =>
       'We received an unexpected response. Please try again.',
     UnexpectedFailure() => 'Something unexpected happened. Please try again.',
+    ValidationFailure() => 'Please fix the errors in the form.',
   };
 }

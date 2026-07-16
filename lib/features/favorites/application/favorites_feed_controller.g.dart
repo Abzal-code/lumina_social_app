@@ -8,24 +8,15 @@ part of 'favorites_feed_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Resolves the favorited post IDs into [Post] entities, displayed in
-/// ascending post ID order. Posts already loaded by the posts list are
-/// reused; the rest are fetched individually and cached for the lifetime
-/// of this controller.
+/// Resolves favorite IDs into cached posts ordered by post ID.
 
 @ProviderFor(FavoritesFeedController)
 final favoritesFeedControllerProvider = FavoritesFeedControllerProvider._();
 
-/// Resolves the favorited post IDs into [Post] entities, displayed in
-/// ascending post ID order. Posts already loaded by the posts list are
-/// reused; the rest are fetched individually and cached for the lifetime
-/// of this controller.
+/// Resolves favorite IDs into cached posts ordered by post ID.
 final class FavoritesFeedControllerProvider
     extends $NotifierProvider<FavoritesFeedController, FavoritesFeedState> {
-  /// Resolves the favorited post IDs into [Post] entities, displayed in
-  /// ascending post ID order. Posts already loaded by the posts list are
-  /// reused; the rest are fetched individually and cached for the lifetime
-  /// of this controller.
+  /// Resolves favorite IDs into cached posts ordered by post ID.
   FavoritesFeedControllerProvider._()
     : super(
         from: null,
@@ -54,12 +45,9 @@ final class FavoritesFeedControllerProvider
 }
 
 String _$favoritesFeedControllerHash() =>
-    r'004bd1a64f410e030bc60aa2becc26f978b296ae';
+    r'a0f9abf8d6b79509e7590f432a3395df536f1920';
 
-/// Resolves the favorited post IDs into [Post] entities, displayed in
-/// ascending post ID order. Posts already loaded by the posts list are
-/// reused; the rest are fetched individually and cached for the lifetime
-/// of this controller.
+/// Resolves favorite IDs into cached posts ordered by post ID.
 
 abstract class _$FavoritesFeedController extends $Notifier<FavoritesFeedState> {
   FavoritesFeedState build();

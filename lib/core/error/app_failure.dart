@@ -31,3 +31,7 @@ final class DataParsingFailure extends AppFailure {
 final class UnexpectedFailure extends AppFailure {
   const UnexpectedFailure();
 }
+
+final class ValidationFailure extends AppFailure {
+  const ValidationFailure();
+}

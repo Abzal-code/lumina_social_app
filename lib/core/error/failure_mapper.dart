@@ -8,4 +8,5 @@ AppFailure mapExceptionToFailure(AppException exception) => switch (exception) {
   NotFoundException() => const NotFoundFailure(),
   ParsingException() => const DataParsingFailure(),
   UnexpectedException() => const UnexpectedFailure(),
+  ValidationException() => const ValidationFailure(),
 };

@@ -37,3 +37,7 @@ final class ParsingException extends AppException {
 final class UnexpectedException extends AppException {
   const UnexpectedException([super.message]);
 }
+
+final class ValidationException extends AppException {
+  const ValidationException([super.message]);
+}

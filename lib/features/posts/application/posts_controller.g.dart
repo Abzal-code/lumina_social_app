@@ -41,7 +41,7 @@ final class PostsControllerProvider
   }
 }
 
-String _$postsControllerHash() => r'6b156aacc16bc61b2d046d770c8318c1fed8d54f';
+String _$postsControllerHash() => r'372b397561f57db832a9affa8790187521e3cf45';
 
 abstract class _$PostsController extends $Notifier<PostsState> {
   PostsState build();

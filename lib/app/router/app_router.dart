@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/posts/presentation/post_details_page.dart';
+import '../../features/posts/presentation/post_form_page.dart';
 import '../../features/posts/presentation/posts_page.dart';
 import '../../features/users/presentation/user_profile_page.dart';
 import '../../features/users/presentation/users_page.dart';
@@ -34,16 +35,30 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const PostsPage(),
                 routes: [
                   GoRoute(
+                    path: AppRoutes.postCreateSegment,
+                    builder: (context, state) => const PostFormPage(),
+                  ),
+                  GoRoute(
                     path: AppRoutes.postDetailsSegment,
                     builder: (context, state) {
-                      final postId = int.tryParse(
-                        state.pathParameters['postId'] ?? '',
-                      );
-                      if (postId == null || postId <= 0) {
+                      final postId = _parsePostId(state);
+                      if (postId == null) {
                         return const PostUnavailablePage();
                       }
                       return PostDetailsPage(postId: postId);
                     },
+                    routes: [
+                      GoRoute(
+                        path: AppRoutes.postEditSegment,
+                        builder: (context, state) {
+                          final postId = _parsePostId(state);
+                          if (postId == null) {
+                            return const PostUnavailablePage();
+                          }
+                          return PostFormPage(postId: postId);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -85,6 +100,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     errorBuilder: (context, state) => const _NavigationErrorPage(),
   );
 });
+
+/// Locally created posts use negative IDs, so only zero and unparsable
+/// values are invalid.
+int? _parsePostId(GoRouterState state) {
+  final postId = int.tryParse(state.pathParameters['postId'] ?? '');
+  if (postId == null || postId == 0) {
+    return null;
+  }
+  return postId;
+}
 
 class _NavigationErrorPage extends StatelessWidget {
   const _NavigationErrorPage();

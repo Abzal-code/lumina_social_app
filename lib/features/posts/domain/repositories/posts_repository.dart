@@ -8,4 +8,19 @@ abstract interface class PostsRepository {
   Future<Post> getPost(int postId);
 
   Future<List<Post>> getPostsForUser(int userId);
+
+  Future<Post> createPost({
+    required int authorId,
+    required String title,
+    required String body,
+  });
+
+  Future<Post> updatePost({
+    required int postId,
+    required int authorId,
+    required String title,
+    required String body,
+  });
+
+  Future<void> deletePost(int postId);
 }

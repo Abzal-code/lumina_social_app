@@ -27,6 +27,35 @@ class ApiClient {
       throw mapDioException(exception);
     }
   }
+
+  /// Returns the decoded JSON body; callers validate its shape.
+  Future<Object?> post(String path, {Object? body}) async {
+    try {
+      final response = await _dio.post<Object?>(path, data: body);
+      return response.data;
+    } on DioException catch (exception) {
+      throw mapDioException(exception);
+    }
+  }
+
+  /// Returns the decoded JSON body; callers validate its shape.
+  Future<Object?> patch(String path, {Object? body}) async {
+    try {
+      final response = await _dio.patch<Object?>(path, data: body);
+      return response.data;
+    } on DioException catch (exception) {
+      throw mapDioException(exception);
+    }
+  }
+
+  Future<Object?> delete(String path) async {
+    try {
+      final response = await _dio.delete<Object?>(path);
+      return response.data;
+    } on DioException catch (exception) {
+      throw mapDioException(exception);
+    }
+  }
 }
 
 final apiClientProvider = Provider<ApiClient>(

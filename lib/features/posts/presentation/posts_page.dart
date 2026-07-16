@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router/app_routes.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/adaptive_content.dart';
 import '../../../core/widgets/app_scaffold.dart';
@@ -40,6 +42,11 @@ class PostsPage extends ConsumerWidget {
 
     return AppScaffold(
       title: 'Posts',
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Create post',
+        onPressed: () => context.push(AppRoutes.postCreate),
+        child: const Icon(Icons.add),
+      ),
       body: AdaptiveContent(
         child: Column(
           children: [

@@ -59,7 +59,7 @@ final class PostDetailsControllerProvider
 }
 
 String _$postDetailsControllerHash() =>
-    r'12f814212e3b730c9e0eadc3a57dfb99f1efd913';
+    r'5c0f31327863033b1a6559c2ceaa14cd7a9d65db';
 
 final class PostDetailsControllerFamily extends $Family
     with

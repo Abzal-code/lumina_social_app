@@ -57,6 +57,23 @@ class FavoritesFeedController extends _$FavoritesFeedController {
     await _resolvePosts();
   }
 
+  void applyPostUpdated(Post post) {
+    if (!_resolvedPosts.containsKey(post.id)) {
+      return;
+    }
+    _resolvedPosts[post.id] = post;
+    state = state.copyWith(
+      posts: [
+        for (final existing in state.posts)
+          existing.id == post.id ? post : existing,
+      ],
+    );
+  }
+
+  void applyPostDeleted(int postId) {
+    _resolvedPosts.remove(postId);
+  }
+
   Future<void> _resolvePosts() async {
     if (_resolveInFlight) {
       return;

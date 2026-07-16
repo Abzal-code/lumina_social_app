@@ -163,6 +163,213 @@ void main() {
     });
   });
 
+  group('PostsRemoteDataSourceImpl.createPost', () {
+    test('POSTs trimmed fields and parses the response object', () async {
+      final dataSource = _dataSourceWith((options) async {
+        expect(options.method, 'POST');
+        expect(options.path, '/posts');
+        expect(options.data, {
+          'userId': 3,
+          'title': 'fresh title',
+          'body': 'fresh body',
+        });
+        return _jsonResponse({
+          'userId': 3,
+          'id': 101,
+          'title': 'fresh title',
+          'body': 'fresh body',
+        });
+      });
+
+      final post = await dataSource.createPost(
+        authorId: 3,
+        title: '  fresh title  ',
+        body: '\nfresh body ',
+      );
+
+      expect(
+        post,
+        const PostDto(
+          userId: 3,
+          id: 101,
+          title: 'fresh title',
+          body: 'fresh body',
+        ),
+      );
+    });
+
+    test('rejects a non-positive author ID without a request', () async {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      await expectLater(
+        dataSource.createPost(authorId: 0, title: 't', body: 'b'),
+        throwsA(isA<NotFoundException>()),
+      );
+      expect(requested, isFalse);
+    });
+
+    test('rejects blank title or body without a request', () async {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      await expectLater(
+        dataSource.createPost(authorId: 1, title: '   ', body: 'b'),
+        throwsA(isA<UnexpectedException>()),
+      );
+      await expectLater(
+        dataSource.createPost(authorId: 1, title: 't', body: ''),
+        throwsA(isA<UnexpectedException>()),
+      );
+      expect(requested, isFalse);
+    });
+
+    test('throws ParsingException when the response is not an object', () {
+      final dataSource = _dataSourceWith((_) async => _jsonResponse([1]));
+
+      expect(
+        dataSource.createPost(authorId: 1, title: 't', body: 'b'),
+        throwsA(isA<ParsingException>()),
+      );
+    });
+
+    test('maps HTTP 500 to ServerException', () {
+      final dataSource = _dataSourceWith(
+        (_) async => _jsonResponse({}, statusCode: 500),
+      );
+
+      expect(
+        dataSource.createPost(authorId: 1, title: 't', body: 'b'),
+        throwsA(isA<ServerException>()),
+      );
+    });
+  });
+
+  group('PostsRemoteDataSourceImpl.updatePost', () {
+    test('PATCHes trimmed fields and parses the response object', () async {
+      final dataSource = _dataSourceWith((options) async {
+        expect(options.method, 'PATCH');
+        expect(options.path, '/posts/9');
+        expect(options.data, {
+          'userId': 2,
+          'title': 'edited',
+          'body': 'edited body',
+        });
+        return _jsonResponse({
+          'userId': 2,
+          'id': 9,
+          'title': 'edited',
+          'body': 'edited body',
+        });
+      });
+
+      final post = await dataSource.updatePost(
+        postId: 9,
+        authorId: 2,
+        title: ' edited ',
+        body: 'edited body',
+      );
+
+      expect(
+        post,
+        const PostDto(userId: 2, id: 9, title: 'edited', body: 'edited body'),
+      );
+    });
+
+    test('rejects non-positive IDs without a request', () async {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      await expectLater(
+        dataSource.updatePost(postId: 0, authorId: 1, title: 't', body: 'b'),
+        throwsA(isA<NotFoundException>()),
+      );
+      await expectLater(
+        dataSource.updatePost(postId: 9, authorId: -1, title: 't', body: 'b'),
+        throwsA(isA<NotFoundException>()),
+      );
+      expect(requested, isFalse);
+    });
+
+    test('rejects blank title or body without a request', () async {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      await expectLater(
+        dataSource.updatePost(postId: 9, authorId: 1, title: ' ', body: 'b'),
+        throwsA(isA<UnexpectedException>()),
+      );
+      expect(requested, isFalse);
+    });
+
+    test('maps HTTP 404 to NotFoundException', () {
+      final dataSource = _dataSourceWith(
+        (_) async => _jsonResponse({}, statusCode: 404),
+      );
+
+      expect(
+        dataSource.updatePost(postId: 9, authorId: 1, title: 't', body: 'b'),
+        throwsA(isA<NotFoundException>()),
+      );
+    });
+  });
+
+  group('PostsRemoteDataSourceImpl.deletePost', () {
+    test('DELETEs the post and accepts an empty object response', () async {
+      RequestOptions? captured;
+      final dataSource = _dataSourceWith((options) async {
+        captured = options;
+        return _jsonResponse({});
+      });
+
+      await dataSource.deletePost(9);
+
+      expect(captured?.method, 'DELETE');
+      expect(captured?.path, '/posts/9');
+    });
+
+    test('rejects non-positive IDs without a request', () async {
+      var requested = false;
+      final dataSource = _dataSourceWith((_) async {
+        requested = true;
+        return _jsonResponse({});
+      });
+
+      await expectLater(
+        dataSource.deletePost(0),
+        throwsA(isA<NotFoundException>()),
+      );
+      await expectLater(
+        dataSource.deletePost(-2),
+        throwsA(isA<NotFoundException>()),
+      );
+      expect(requested, isFalse);
+    });
+
+    test('maps Dio connection errors to NetworkException', () {
+      final dataSource = _dataSourceWith(
+        (options) => throw DioException.connectionError(
+          requestOptions: options,
+          reason: 'refused',
+        ),
+      );
+
+      expect(dataSource.deletePost(9), throwsA(isA<NetworkException>()));
+    });
+  });
+
   group('PostsRemoteDataSourceImpl.getPostsForUser', () {
     test('requests /users/{id}/posts and parses the list in order', () async {
       final dataSource = _dataSourceWith((options) async {

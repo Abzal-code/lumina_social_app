@@ -45,7 +45,7 @@ final class FavoritesControllerProvider
 }
 
 String _$favoritesControllerHash() =>
-    r'73c696e175770b20c1763f188f7f8277d2c46d70';
+    r'5745635602932cde6fa398356d9fb2c1f8a70cc1';
 
 /// Kept alive so favorites restore once and stay in sync across all tabs.
 

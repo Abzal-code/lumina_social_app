@@ -251,4 +251,48 @@ void main() {
       expect(stateOf(container).favoritePostIds, isEmpty);
     });
   });
+
+  group('removeFavorite', () {
+    test('removes and persists an existing favorite', () async {
+      when(
+        () => repository.getFavoritePostIds(),
+      ).thenAnswer((_) async => {1, 2});
+
+      final container = createContainer();
+      await pumpEventQueue();
+
+      await controllerOf(container).removeFavorite(2);
+
+      expect(stateOf(container).favoritePostIds, {1});
+      verify(() => repository.removeFavorite(2)).called(1);
+    });
+
+    test('no-ops when the post is not a favorite', () async {
+      when(() => repository.getFavoritePostIds()).thenAnswer((_) async => {1});
+
+      final container = createContainer();
+      await pumpEventQueue();
+
+      await controllerOf(container).removeFavorite(5);
+
+      expect(stateOf(container).favoritePostIds, {1});
+      verifyNever(() => repository.removeFavorite(any()));
+    });
+
+    test('rolls back and exposes the failure when persistence fails', () async {
+      when(() => repository.getFavoritePostIds()).thenAnswer((_) async => {2});
+      when(
+        () => repository.removeFavorite(2),
+      ).thenThrow(const UnexpectedFailure());
+
+      final container = createContainer();
+      await pumpEventQueue();
+
+      await controllerOf(container).removeFavorite(2);
+
+      final state = stateOf(container);
+      expect(state.favoritePostIds, {2});
+      expect(state.toggleFailure, isA<UnexpectedFailure>());
+    });
+  });
 }
